@@ -21,7 +21,6 @@ generateRefreshToken(user.id,res);
      }
 };
 export const login  =  async (req,res)=>{   
-   console.log("Entro aqui===???");
    const {email,password} = req.body;
    try {
    let  user =  await User.findOne({email});
