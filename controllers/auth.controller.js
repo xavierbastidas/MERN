@@ -4,12 +4,10 @@ import { generateRefreshToken, generateToken } from "../utils/TokenManager.js";
 export const register  =  async (req,res)=>{
     const {email,password} = req.body;
      try {
-        //alternative searching by email
     let  user =  await User.findOne({email});
       if (user) throw ({code:11000})
       user = new User ({email,password});
         await user.save();
-//Generar el token con JWT
 const {token,expiresIn}= generateToken(user.id);
 generateRefreshToken(user.id,res);
         return res.status(201).json({token,expiresIn});
@@ -33,7 +31,6 @@ export const login  =  async (req,res)=>{
     if(!resultPassword){
     return res.status(400).json({error:"Incorrect password"});
     }
-    //Generar el token con JWT
    const {token,expiresIn}= generateToken(user.id);
    generateRefreshToken(user.id,res)
     return res.json({token,expiresIn});
@@ -59,7 +56,6 @@ export const refreshToken = (req, res)=>{
     const{token,expiresIn}= generateToken(req.uid);
    return res.json({token,expiresIn});
  } catch (error) {
-   console.log(error);
    return res.status(500).json({error:"Internal server"})
 }
 };

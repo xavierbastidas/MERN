@@ -49,7 +49,6 @@ export const bodyLinkValidator = [
     await  axios.get(value);
      return value;
    } catch (error) {
-    //console.log(error);
     throw new Error('not found longlink 404');
    }
   }),

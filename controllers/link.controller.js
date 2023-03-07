@@ -7,7 +7,6 @@ export const getLinks = async (req,res)=>{
     const links = await Link.find({uid:req.uid})
     return res.json({links});
     } catch (error) {
-        console.log(error);
      return res.status(500).json({error:'server error'});
     }
 };
@@ -19,7 +18,6 @@ export const getLink = async (req,res)=>{
         if(!link) return  res.status(404).json({error:"The link does not exist"});
         return res.json({longLink:link.longLink});
         } catch (error) {
-            console.log(error);
             if(error.kind==="ObjectId"){
             return res.status(403).json({error:"incorrect format id"});
             }

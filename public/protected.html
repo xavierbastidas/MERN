@@ -16,18 +16,11 @@
         logout.addEventListener('click', async ()=>{
             const res =   await fetch('/api/auth/logout',{
              method:'GET',
-             //headers:{
-               // "Content-Type": "application/json",
-                //'Authorization':`Bearer ${token}`,
-             //}
-         //   credentials:"include",
             });
         });
         
         document.addEventListener('DOMContentLoaded', async e=>{
         try {
-           // const token = localStorage.getItem('token');
-              //console.log(token);
         const resToken = await  fetch('/api/auth/refresh',{
             method:'GET',
             credentials:"include",
@@ -40,7 +33,6 @@
                 "Content-Type": "application/json",
                 'Authorization':`Bearer ${token}`,
              }
-         //   credentials:"include",
             });
             console.log(res.ok,res.status);
             const data = await res.json();

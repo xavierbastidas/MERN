@@ -20,8 +20,6 @@
 e.preventDefault();
 
   try {
-    //console.log(password.value);
-    //console.log(email.value);
    const res =  await fetch('http://localhost:5000/api/auth/login',{
         method:'POST',
         headers: {
@@ -32,7 +30,6 @@ e.preventDefault();
     })
     console.log(res.ok,res.status);
     const {token} = await res.json ()
-    //localStorage.setItem("token",token);
   } catch (error) {
     console.log(error);
   }
