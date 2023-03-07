@@ -9,17 +9,38 @@
 <body>
     <h1>Ruta protegida</h1>
      <h2 id="app">Email:</h2>
+     <button id="logout">Cerrar sesion</button>
     </div>
     <script>
+        const logout  = document.getElementById('logout');
+        logout.addEventListener('click', async ()=>{
+            const res =   await fetch('/api/auth/logout',{
+             method:'GET',
+             //headers:{
+               // "Content-Type": "application/json",
+                //'Authorization':`Bearer ${token}`,
+             //}
+         //   credentials:"include",
+            });
+        });
+        
         document.addEventListener('DOMContentLoaded', async e=>{
         try {
-            const token = localStorage.getItem('token');
+           // const token = localStorage.getItem('token');
+              //console.log(token);
+        const resToken = await  fetch('/api/auth/refresh',{
+            method:'GET',
+            credentials:"include",
+        })
+        const {token}  = await resToken.json();
+
          const res =    await fetch('/api/auth/protected',{
              method:'GET',
              headers:{
+                "Content-Type": "application/json",
                 'Authorization':`Bearer ${token}`,
-                "Content-Type": "application/json"
-             },
+             }
+         //   credentials:"include",
             });
             console.log(res.ok,res.status);
             const data = await res.json();

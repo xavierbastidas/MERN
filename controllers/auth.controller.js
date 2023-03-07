@@ -1,7 +1,6 @@
 
 import { User } from "../models/User.js";
-import jwt from "jsonwebtoken";
-import { generateToken } from "../utils/TokenManager.js";
+import { generateRefreshToken, generateToken } from "../utils/TokenManager.js";
 export const register  =  async (req,res)=>{
     const {email,password} = req.body;
      try {
@@ -11,39 +10,36 @@ export const register  =  async (req,res)=>{
       user = new User ({email,password});
         await user.save();
 //Generar el token con JWT
-        return res.status(201).json({ok:true});
+const {token,expiresIn}= generateToken(user.id);
+generateRefreshToken(user.id,res);
+        return res.status(201).json({token,expiresIn});
      } catch (error) {
       console.log(error);
       //mongoose default alternative
       if(error.code===11000){
-         return res.status(400).json({error:"Ya existe este usuario"});
+         return res.status(400).json({error:"This user already exists"});
       }
-      return res.status(500).json({error:"Error del servidor"});
+      return res.status(500).json({error:"Server error"});
      }
 };
 export const login  =  async (req,res)=>{   
+   console.log("Entro aqui===???");
    const {email,password} = req.body;
    try {
    let  user =  await User.findOne({email});
    if(!user) 
-   return res.status(400).json({error:"No existe este usuario"});
+   return res.status(400).json({error:"This user does not exist"});
     const resultPassword = await user.comparePassword(password);
     if(!resultPassword){
-    return res.status(400).json({error:"Contraseña incorrecta"});
+    return res.status(400).json({error:"Incorrect password"});
     }
     //Generar el token con JWT
    const {token,expiresIn}= generateToken(user.id);
-  
-    res.cookie("token",token,{
-      httpOnly:true,
-      secure:!(process.env.MODO==="developer")
-    });
-    
-
+   generateRefreshToken(user.id,res)
     return res.json({token,expiresIn});
    } catch (error) {
       console.log(error);
-      return res.status(500).json({error:"Error del servidor"});
+      return res.status(500).json({error:"Server error"});
    }
 };
 
@@ -53,13 +49,24 @@ export const infoUser =  async (req,res)=>{
       return  res.json({email:user.email , uid:user.uid});
    } catch (error) {
       
-      return res.status(500).json({error:"Internal server"})
+      return res.status(500).json({error:"Internal server"});
    }
 };
 
+export const refreshToken = (req, res)=>{
 
+ try { 
+    const{token,expiresIn}= generateToken(req.uid);
+   return res.json({token,expiresIn});
+ } catch (error) {
+   console.log(error);
+   return res.status(500).json({error:"Internal server"})
+}
+};
 
-
-
+export const logout  = (req,res)=>{
+   res.clearCookie('refreshToken');
+   res.json({ok:true});
+};
 
 
